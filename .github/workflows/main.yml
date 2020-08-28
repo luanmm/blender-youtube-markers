@@ -1,61 +1,41 @@
-name: "pre-release"
-
-on:
-  push:
-    branches:
-      - "master"
-
-jobs:
-  pre-release:
-    name: "Pre Release"
-    runs-on: "ubuntu-latest"
-
-    steps:
-      - name: "Build"
-        run: |
-          echo "done!"
-      - uses: actions/checkout@master
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          filename: blender-youtube-markers.zip
-          exclusions: '*.git*'
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
-          files: |
-            blender-youtube-markers.zip
---- 
-name: "tagged-release"
-
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
+
+name: Create Release
 
 jobs:
-  tagged-release:
-    name: "Tagged Release"
-    runs-on: "ubuntu-latest"
-
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
     steps:
-      - name: "Build"
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create Add-on Archive
         run: |
-          echo "done!"
-          
-      - uses: actions/checkout@master
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
+          zip youtube-markers.zip youtube-markers.py LICENSE
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          filename: blender-youtube-markers.zip
-          exclusions: *.git*
-
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
           prerelease: false
-          files: |
-            blender-youtube-markers.zip
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./youtube-markers.zip
+          asset_name: youtube-markers.zip
+          asset_content_type: application/zip
