@@ -14,19 +14,15 @@ jobs:
         uses: actions/checkout@v2
       - name: Create Add-on Archive
         run: |
-          zip youtube-markers.zip youtube-markers.py LICENSE
+          zip blender-youtube-markers.zip youtube-markers.py LICENSE.txt
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - First Change
-            - Second Change
           draft: false
           prerelease: false
       - name: Upload Release Asset
@@ -36,6 +32,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./youtube-markers.zip
-          asset_name: youtube-markers.zip
+          asset_path: ./blender-youtube-markers.zip
+          asset_name: blender-youtube-markers.zip
           asset_content_type: application/zip

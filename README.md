@@ -25,4 +25,4 @@ To learn more about this YouTube feature, please visit [this support page](https
 
 ## License
 
-MIT License, as detailed in [this license file](LICENSE).
+MIT License, as detailed in [this license file](LICENSE.txt).
